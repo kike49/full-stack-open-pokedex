@@ -48,6 +48,7 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         timeout-minutes: 10
+
   tag_release:
     needs: [build-and-deploy]
     runs-on: ubuntu-20.04
@@ -58,3 +59,32 @@ jobs:
         uses: anothrNick/github-tag-action@1.64.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  notify:
+    runs-on: ubuntu-20.04
+    needs: [build-and-deploy]
+    steps:
+      - name: Notify Discord on Success
+        if: success()
+        uses: ILexRS/discord-webhook-notify@v2
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          username: 'Deployment Bot'
+          message: '✅ A new version has been successfully deployed!'
+
+  notify-failure:
+    runs-on: ubuntu-20.04
+    if: failure()
+    steps:
+      - name: Notify Discord on Failure
+        uses: ILexRS/discord-webhook-notify@v2
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          username: 'Build Error Bot'
+          message: |
+            ❌ Build failed!
+            - **Commit**: ${{ github.sha }}
+            - **Author**: ${{ github.actor }}
+            - **Commit Message**: ${{ github.event.head_commit.message }}
+            - **Branch**: ${{ github.ref }}
+            - [View Logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
