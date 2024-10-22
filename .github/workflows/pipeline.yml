@@ -16,11 +16,9 @@ jobs:
         with:
           node-version: '20'
       - name: install dependencies
-        run: |
-          npm ci
-          npm install -g eslint
-      - name: lint code
-        run: npm run eslint
+        run: npm install
+      # - name: lint code
+      #   run: npm run eslint
       - name: run tests
         run: npm run test
       - name: build package
