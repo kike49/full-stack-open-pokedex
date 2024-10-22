@@ -13,3 +13,6 @@ Start by running `npm install` inside the project folder
 + `npm run eslint` to run eslint
 + `npm run build` to make a production build
 + `npm run start-prod` to run your production build
+
+
+Live app: https://fullstack-p11-pokedex.netlify.app/
