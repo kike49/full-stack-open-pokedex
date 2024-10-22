@@ -70,7 +70,7 @@ jobs:
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
           username: 'Deployment Bot'
-          text: '✅ A new version has been successfully deployed!'
+          text: 'A new version has been successfully deployed!'
           severity: info
 
   notify-failure:
@@ -83,7 +83,7 @@ jobs:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
           username: 'Build Error Bot'
           text: |
-            ❌ Build failed!
+            Build failed!
             - **Commit**: ${{ github.sha }}
             - **Author**: ${{ github.actor }}
             - **Commit Message**: ${{ github.event.head_commit.message }}
