@@ -61,32 +61,74 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   notify:
-    runs-on: ubuntu-20.04
-    needs: [build-and-deploy]
-    steps:
-      - name: Notify Discord on Success
-        if: success()
-        uses: rjstone/discord-webhook-notify@v1.0.4
-        with:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          username: 'Deployment Bot'
-          details: A new version has been successfully deployed!
-          severity: info
+  runs-on: ubuntu-20.04
+  needs: [build-and-deploy]
+  if: success()
+  steps:
+    - name: Notify Discord on Success
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      run: |
+        curl -H "Content-Type: application/json" -X POST -d '{
+          "username": "Deployment Bot",
+          "content": "A new version has been successfully deployed!",
+          "embeds": [{
+            "color": 3066993,
+            "title": "Deployment Successful",
+            "description": "A new version has been successfully deployed to production.",
+            "fields": [
+              {
+                "name": "Commit",
+                "value": "${{ github.sha }}",
+                "inline": true
+              },
+              {
+                "name": "Author",
+                "value": "${{ github.actor }}",
+                "inline": true
+              }
+            ]
+          }]
+        }' $DISCORD_WEBHOOK
 
   notify-failure:
     runs-on: ubuntu-20.04
     if: failure()
     steps:
       - name: Notify Discord on Failure
-        uses: rjstone/discord-webhook-notify@v1.0.4
-        with:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          username: 'Build Error Bot'
-          details: |
-            Build failed!
-            - **Commit**: ${{ github.sha }}
-            - **Author**: ${{ github.actor }}
-            - **Commit Message**: ${{ github.event.head_commit.message }}
-            - **Branch**: ${{ github.ref }}
-            - [View Logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-          severity: error
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -H "Content-Type: application/json" -X POST -d '{
+            "username": "Build Error Bot",
+            "content": "Build failed!",
+            "embeds": [{
+              "color": 15158332,
+              "title": "Build Failure",
+              "description": "The build process has failed.",
+              "fields": [
+                {
+                  "name": "Commit",
+                  "value": "${{ github.sha }}",
+                  "inline": true
+                },
+                {
+                  "name": "Author",
+                  "value": "${{ github.actor }}",
+                  "inline": true
+                },
+                {
+                  "name": "Commit Message",
+                  "value": "${{ github.event.head_commit.message }}"
+                },
+                {
+                  "name": "Branch",
+                  "value": "${{ github.ref }}"
+                },
+                {
+                  "name": "Logs",
+                  "value": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                }
+              ]
+            }]
+          }' $DISCORD_WEBHOOK
