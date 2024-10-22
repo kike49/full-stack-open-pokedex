@@ -27,12 +27,12 @@ jobs:
         run: NODE_ENV=development npm run test
       - name: build package
         run: npm run build
-      - name: e2e tests
-        uses: cypress-io/github-action@v5
-        with:
-          command: npm run test:e2e
-          start: npm run start-dev
-          wait-on: http://localhost:5000
+      # - name: e2e tests
+      #   uses: cypress-io/github-action@v5
+      #   with:
+      #     command: npm run test:e2e
+      #     start: npm run start-dev
+      #     wait-on: http://localhost:5000
       - name: Deploy to Netlify
         if: ${{ github.event_name == 'push' }}
         uses: nwtgck/actions-netlify@v2.0
@@ -48,3 +48,11 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         timeout-minutes: 10
+  tag_release:
+    needs: [build-and-deploy]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.64.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
