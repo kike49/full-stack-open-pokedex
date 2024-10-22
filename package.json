@@ -8,7 +8,8 @@
     "start-prod": "node app.js",
     "test": "jest",
     "eslint": "eslint ./**/*.{js,jsx} --fix",
-    "build": "webpack --mode production"
+    "build": "webpack --mode production",
+    "test:e2e": "cypress open"
   },
   "repository": {
     "type": "git",
@@ -54,6 +55,7 @@
     "react-router-dom": "^6.21.1"
   },
   "jest": {
-    "testEnvironment": "jsdom"
+    "testEnvironment": "jsdom",
+    "testPathIgnorePatterns": ["e2e-tests"]
   }
 }
