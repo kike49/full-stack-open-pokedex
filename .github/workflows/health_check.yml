@@ -1,3 +1,5 @@
+name: health check
+
 on:
   schedule:
     - cron: '0 0 * * *'  # runs once every 24 hours at midnight UTC
