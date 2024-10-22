@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches: [main]
+      types: [opened, synchronize]
 
 jobs:
   build-and-deploy:
@@ -20,7 +23,7 @@ jobs:
       - name: lint code
         run: npm run eslint
       - name: run tests
-        run: npm run test
+        run: NODE_ENV=development npm run test
       - name: build package
         run: npm run build
       - name: e2e tests
