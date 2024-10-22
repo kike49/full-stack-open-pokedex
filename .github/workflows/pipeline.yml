@@ -61,35 +61,35 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   notify:
-  runs-on: ubuntu-20.04
-  needs: [build-and-deploy]
-  if: success()
-  steps:
-    - name: Notify Discord on Success
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-      run: |
-        curl -H "Content-Type: application/json" -X POST -d '{
-          "username": "Deployment Bot",
-          "content": "A new version has been successfully deployed!",
-          "embeds": [{
-            "color": 3066993,
-            "title": "Deployment Successful",
-            "description": "A new version has been successfully deployed to production.",
-            "fields": [
-              {
-                "name": "Commit",
-                "value": "${{ github.sha }}",
-                "inline": true
-              },
-              {
-                "name": "Author",
-                "value": "${{ github.actor }}",
-                "inline": true
-              }
-            ]
-          }]
-        }' $DISCORD_WEBHOOK
+    runs-on: ubuntu-20.04
+    needs: [build-and-deploy]
+    if: success()
+    steps:
+      - name: Notify Discord on Success
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -H "Content-Type: application/json" -X POST -d '{
+            "username": "Deployment Bot",
+            "content": "A new version has been successfully deployed!",
+            "embeds": [{
+              "color": 3066993,
+              "title": "Deployment Successful",
+              "description": "A new version has been successfully deployed to production.",
+              "fields": [
+                {
+                  "name": "Commit",
+                  "value": "${{ github.sha }}",
+                  "inline": true
+                },
+                {
+                  "name": "Author",
+                  "value": "${{ github.actor }}",
+                  "inline": true
+                }
+              ]
+            }]
+          }' $DISCORD_WEBHOOK
 
   notify-failure:
     runs-on: ubuntu-20.04
